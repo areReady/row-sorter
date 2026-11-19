@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Row Sorter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section id="lock" class="lock">
+    <form id="unlock-form" class="lock-card">
+      <h1>Row Sorter</h1>
+      <p class="hint">This site is password protected.</p>
+      <label for="password" class="sr-only">Password</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Password" required autofocus />
+      <button type="submit" class="primary" id="unlock-btn">Unlock</button>
+      <p id="lock-error" class="error" role="alert"></p>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <header class="toolbar">
+      <h1>Row Sorter</h1>
+      <div class="actions">
+        <button id="add-row" type="button">+ Row</button>
+        <button id="add-col" type="button">+ Column</button>
+        <label class="button">
+          Import CSV
+          <input id="import-csv" type="file" accept=".csv,text/csv" hidden />
+        </label>
+        <button id="export-csv" type="button" class="primary">Export CSV</button>
+        <button id="export-pdf" type="button" class="primary">Export PDF</button>
+        <button id="reset" type="button" class="subtle">Reset</button>
+        <button id="lock-btn" type="button" class="subtle">Lock</button>
+      </div>
+    </header>
+
+    <main>
+      <p class="hint">Drag rows by the ⋮⋮ handle to reorder. Click any cell or header to edit it.</p>
+      <div class="table-wrap">
+        <table id="grid">
+          <thead><tr id="header-row"></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="csv.js"></script>
+  <script src="crypto.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

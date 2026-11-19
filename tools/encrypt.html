@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Encrypt Rows</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    main { max-width: 720px; }
+    label { display: block; margin: 12px 0 4px; font-weight: 600; }
+    textarea, input[type="password"] { width: 100%; font: 13px/1.4 ui-monospace, monospace; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+    textarea { height: 180px; }
+    .row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+    .row label { margin: 0; font-weight: normal; }
+    #status { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="toolbar"><h1>Encrypt rows for the site</h1></header>
+  <main>
+    <p class="hint">Everything runs in this browser; nothing is uploaded. The result is the file <code>data.enc.json</code>. Replace the one in the repository with it and push.</p>
+    <label for="csv">CSV</label>
+    <textarea id="csv" placeholder="Paste CSV here, or choose a file below"></textarea>
+    <div class="row">
+      <input id="file" type="file" accept=".csv,text/csv" />
+      <input id="has-header" type="checkbox" checked /><label for="has-header">First row is column headers</label>
+    </div>
+    <label for="pw">Site password</label>
+    <input id="pw" type="password" autocomplete="new-password" />
+    <div class="row">
+      <button id="go" type="button" class="primary">Encrypt and download data.enc.json</button>
+      <span id="status"></span>
+    </div>
+  </main>
+  <script src="../csv.js"></script>
+  <script src="../crypto.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    $("file").addEventListener("change", async (e) => {
+      const f = e.target.files[0];
+      if (f) $("csv").value = await f.text();
+    });
+    $("go").addEventListener("click", async () => {
+      const rows = CSV.parse($("csv").value);
+      if (!rows.length) { $("status").textContent = "The CSV is empty."; return; }
+      if (!$("pw").value) { $("status").textContent = "Enter the password."; return; }
+      $("status").textContent = "Encrypting…";
+      const table = CSV.toTable(rows, $("has-header").checked);
+      const payload = await RowCrypto.encrypt(table, $("pw").value);
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "data.enc.json";
+      a.click();
+      $("status").textContent = `Encrypted ${table.rows.length} rows × ${table.columns.length} columns.`;
+    });
+  </script>
+</body>
+</html>
